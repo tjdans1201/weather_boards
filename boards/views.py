@@ -8,10 +8,9 @@ import requests
 import json
 import re
 from argon2 import PasswordHasher
-from datetime import datetime
 
-from boards import serializers
-
+# 날씨 정보 취득에 필요한 API Key 입력필요
+weather_api_key = ""
 # Create your views here.
 
 
@@ -31,7 +30,7 @@ def check_password(password):
     return flg, message
 
 
-def check_title_content(content, title):
+def check_title_content(title, content):
     """
     제목, 본문 적합성 체크
     """
@@ -84,10 +83,11 @@ class BoardsAPI(APIView):
                 return Response(
                     {"message": message}, status=status.HTTP_400_BAD_REQUEST
                 )
+            # 패스워드 암호화
             request_body["password"] = PasswordHasher().hash(request_body["password"])
-            # 현재 날씨 취득
+            # 현재 날씨 취득 (한국 서울 기준)
             response = requests.get(
-                url="http://api.weatherapi.com/v1/current.json?key=&q=seoul&aqi=no&lang=ko"
+                url="http://api.weatherapi.com/v1/current.json?key="+str(weather_api_key)+"&q=seoul&aqi=no&lang=ko"
             )
             response_body = json.loads(response.content)
             weather_condition = response_body["current"]["condition"]["text"]
@@ -170,10 +170,6 @@ class BoardAPI(APIView):
                     {"message": message}, status=status.HTTP_400_BAD_REQUEST
                 )
             # # 해당 게시물 update
-            # board.title = title
-            # board.content = content
-            # board.updated_at = datetime.now()
-            # board.save()
             serializer = BoardUpdateSerializer(board, data=request_body)
             if serializer.is_valid():
                 serializer.save()
