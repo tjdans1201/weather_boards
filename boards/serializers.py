@@ -7,12 +7,18 @@ class BoardSerializer(serializers.ModelSerializer):
         model = Board
         fields = ["id", "title", "content","author", "created_at","current_weather","updated_at"]
 
-class BoardDetailSerailizer(serializers.ModelSerializer):
+class BoardDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ["id","author", "title", "content", "current_weather","created_at","updated_at"]
 
-class BoardCreateSerailizer(serializers.ModelSerializer):
+class BoardCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ["author", "title", "content", "current_weather", "password"]
+
+class BoardUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Board
+        fields = ["title","content","updated_at"]
+
