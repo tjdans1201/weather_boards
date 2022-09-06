@@ -50,9 +50,14 @@ class BoardsAPI(APIView):
     def get(self, request):
         """
         모든 게시판 정보를 리턴한다.
+        페이지네이션 구현, 1 page당 count 20
         """
         try:
-            boards = Board.objects.all()
+            # page 번호 체크
+            page = int(request.query_params["page"])
+            count = 20
+            offset = int((count*(page-1)))
+            boards = Board.objects.all().order_by("created_at")[offset:offset+count]
             serializer = BoardSerializer(boards, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
