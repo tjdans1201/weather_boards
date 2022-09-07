@@ -228,7 +228,7 @@ class TestViews(TestCase):
         client = APIClient()
         # case_1 : 성공
         response = client.get("/api/boards/1")
-        result = response.data
+        result = response.data["board_data"]
         self.assertEqual(result["title"], "test_board_detail")
         self.assertEqual(result["content"], "test_board_detail_content")
         self.assertEqual(result["author"], "tester")
@@ -374,19 +374,19 @@ class TestViews(TestCase):
         # board table(data 40개 존재)
         # case_1 : 성공(1페이지) 20개 리턴
         response = client.get("/api/boards?page=1")
-        result = response.data
+        result = response.data["board_list"]
         print(result)
         self.assertEqual(len(result), 20)
 
         # case_2 : 성공(2페이지) 20개 리턴
         response = client.get("/api/boards?page=2")
-        result = response.data
+        result = response.data["board_list"]
         print(result)
         self.assertEqual(len(result), 20)
 
         # case_2 : 성공(3페이지) 0개 리턴
         response = client.get("/api/boards?page=3")
-        result = response.data
+        result = response.data["board_list"]
         print(result)
         self.assertEqual(len(result), 0)
         print("finish_test_get_board_list")
