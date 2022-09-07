@@ -81,6 +81,8 @@ def call_weather_success(url, timeout=None, status_code=None):
         ),
         200,
     )
+
+
 """
 views.py unittest
 
