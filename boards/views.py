@@ -9,8 +9,6 @@ import json
 import re
 from argon2 import PasswordHasher
 
-# 날씨 정보 취득에 필요한 API Key 입력필요
-weather_api_key = ""
 # Create your views here.
 
 
@@ -57,9 +55,9 @@ class BoardsAPI(APIView):
             page = int(request.query_params["page"])
             count = 20
             offset = int((count*(page-1)))
-            boards = Board.objects.all().order_by("created_at")[offset:offset+count]
+            boards = Board.objects.all().order_by("-created_at")[offset:offset+count]
             serializer = BoardSerializer(boards, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"board_list":serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(
@@ -91,6 +89,8 @@ class BoardsAPI(APIView):
             # 패스워드 암호화
             request_body["password"] = PasswordHasher().hash(request_body["password"])
             # 현재 날씨 취득 (한국 서울 기준)
+            # ※ 날씨 정보 취득에 필요한 API Key 입력필요
+            weather_api_key = ""
             response = requests.get(
                 url="http://api.weatherapi.com/v1/current.json?key="+str(weather_api_key)+"&q=seoul&aqi=no&lang=ko"
             )
@@ -100,7 +100,7 @@ class BoardsAPI(APIView):
             serializer = BoardCreateSerializer(data=request_body)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message": "success"}, status=status.HTTP_201_CREATED)
+                return Response({"message": "게시물이 등록되었습니다."}, status=status.HTTP_201_CREATED)
         except Exception as e:
             print(e)
             return Response(
@@ -117,7 +117,7 @@ class BoardAPI(APIView):
         try:
             board = get_object_or_404(Board, id=id)
             serializer = BoardDetailSerializer(board)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"board_data":serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(
@@ -139,11 +139,11 @@ class BoardAPI(APIView):
                 PasswordHasher().verify(board.password, password)
             except Exception:
                 return Response(
-                    {"message": "패스워드가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "비밀번호가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
                 )
             # 삭제
             board.delete()
-            return Response({"message": "success"}, status=status.HTTP_200_OK)
+            return Response({"message": "게시물이 삭제되었습니다."}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(
@@ -164,7 +164,7 @@ class BoardAPI(APIView):
                 PasswordHasher().verify(board.password, request.data["password"])
             except Exception:
                 return Response(
-                    {"message": "패스워드가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "비밀번호가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
                 )
             # 제목, 본론 validation 체크
             title = request_body["title"]
@@ -178,7 +178,7 @@ class BoardAPI(APIView):
             serializer = BoardUpdateSerializer(board, data=request_body)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message":"수정되었습니다."}, status=status.HTTP_200_OK)
+                return Response({"message":"게시물이 수정되었습니다."}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(
