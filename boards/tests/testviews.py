@@ -259,7 +259,7 @@ class TestViews(TestCase):
             },
             format="json",
         )
-        exp = {"message": "패스워드가 틀렸습니다."}
+        exp = {"message": "비밀번호가 틀렸습니다."}
         print(result.data)
         self.assertEqual(result.status_code, 400)
         self.assertEqual(result.data, exp)
@@ -340,7 +340,7 @@ class TestViews(TestCase):
             {"password": "testaaa1"},
             format="json",
         )
-        exp = {"message": "패스워드가 틀렸습니다."}
+        exp = {"message": "비밀번호가 틀렸습니다."}
         print(result.data)
         self.assertEqual(result.status_code, 400)
         self.assertEqual(result.data, exp)

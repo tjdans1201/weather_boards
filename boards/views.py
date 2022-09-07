@@ -55,9 +55,9 @@ class BoardsAPI(APIView):
             page = int(request.query_params["page"])
             count = 20
             offset = int((count*(page-1)))
-            boards = Board.objects.all().order_by("created_at")[offset:offset+count]
+            boards = Board.objects.all().order_by("-created_at")[offset:offset+count]
             serializer = BoardSerializer(boards, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"board_list":serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(
@@ -117,7 +117,7 @@ class BoardAPI(APIView):
         try:
             board = get_object_or_404(Board, id=id)
             serializer = BoardDetailSerializer(board)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"board_data":serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(
@@ -139,7 +139,7 @@ class BoardAPI(APIView):
                 PasswordHasher().verify(board.password, password)
             except Exception:
                 return Response(
-                    {"message": "패스워드가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "비밀번호가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
                 )
             # 삭제
             board.delete()
@@ -164,7 +164,7 @@ class BoardAPI(APIView):
                 PasswordHasher().verify(board.password, request.data["password"])
             except Exception:
                 return Response(
-                    {"message": "패스워드가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "비밀번호가 틀렸습니다."}, status=status.HTTP_400_BAD_REQUEST
                 )
             # 제목, 본론 validation 체크
             title = request_body["title"]
