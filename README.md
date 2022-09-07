@@ -199,6 +199,7 @@ Response Example
 
 ### 게시물 수정
 - Request Body의 password와 해당 게시물의 password가 같으면 제목과 본문을 수정할 수 있다.
+
 API URL
 
 PUT api/boards/<int:id>
