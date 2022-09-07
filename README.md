@@ -1,4 +1,4 @@
-# wheather_boards
+# weather_boards
 ----------
 ## 개발기간
 #### 2022-09-06 ~ 2022-09-07
